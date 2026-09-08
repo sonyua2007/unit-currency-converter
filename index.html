@@ -7,10 +7,73 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <!-- Шапка з назвою -->
-    <!-- Основний вміст: вибір типу конвертації, введення значення й одиниць, результат -->
-    <!-- Підвал -->
-    <p>Hello world!</p>
+    <header>
+      <h1>Конвертер валют і одиниць</h1>
+    </header>
+    <main>
+      <section id="type">
+        <h2>Вибір типу конвертації</h2>
+        <a href="#currancy">Конвертувати валюту</a>
+        <a href="#measurment">Конвертувати одиниці</a>
+      </section>
+      <section id="form">
+        <h2>Форма конвертації</h2>
+        <form id="currancy">
+          <label for="number-of-currency">Сума: </label>
+          <input type="number" id="number-of-currency" />
+
+          <label for="from-which-currency">З якої валюти</label>
+          <select id="from-which-currency">
+            <option>USD</option>
+            <option>UAH</option>
+            <option>EUR</option>
+            <option>GBP</option>
+            <option>JPY</option>
+          </select>
+
+          <label for="in-what-currency">В яку валюту</label>
+          <select id="in-what-currency">
+            <option>USD</option>
+            <option>UAH</option>
+            <option>EUR</option>
+            <option>GBP</option>
+            <option>JPY</option>
+          </select>
+
+          <input type="submit" value="Конвертувати" />
+          <label for="result-currancy">Результат: </label>
+          <output id="result-currancy"></output>
+        </form>
+        <form id="measurment">
+          <label for="number-of-measurement">Значення: </label>
+          <input type="number" id="number-of-measurement" />
+
+          <label for="from-which-measurment">З якої величини</label>
+          <select id="from-which-measurment">
+            <option>cm</option>
+            <option>mm</option>
+            <option>m</option>
+          </select>
+
+          <label for="in-what-measurments">В яку величину</label>
+          <select id="in-what-measurments">
+            <option>cm</option>
+            <option>mm</option>
+            <option>m</option>
+          </select>
+
+          <input type="submit" value="Конвертувати" />
+          <label for="result-measurment">Результат: </label>
+          <output id="result-measurment"></output>
+        </form>
+      </section>
+    </main>
+    <footer>
+      <p>
+        Увага: реальний курс при обміні може відрізнятися залежно від вашого
+        банку. &copy; 2026
+      </p>
+    </footer>
     <script src="js/app.js"></script>
   </body>
 </html>
