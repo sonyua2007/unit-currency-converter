@@ -1,0 +1,59 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+
+  color: #242424;
+  background-color: #c1d3e5;
+}
+header {
+  padding: 10px;
+  background-color: #2a3a68;
+
+  font-size: medium;
+  color: aliceblue;
+}
+main {
+  max-width: 800px;
+  margin: 0 auto;
+}
+section {
+  padding: 0 16px;
+  margin-bottom: 40px;
+}
+input,
+select {
+  border: 1px solid #274158;
+
+  font-size: 1.1rem;
+
+  padding: 12px;
+}
+input:focus,
+select:focus {
+  border-color: #4e6cb8;
+  outline: none;
+}
+input[type="submit"] {
+  padding: 12px 24px;
+  border-radius: 6px;
+  background-color: #2a3c6a;
+  color: aliceblue;
+  border: none;
+  cursor: pointer;
+}
+input[type="submit"]:hover {
+  background-color: #1a2542;
+}
+footer {
+  font-size: 0.9rem;
+  padding: 20px;
+  text-align: center;
+  color: #3b3b3b;
+}
