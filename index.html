@@ -22,23 +22,27 @@
           <label for="number-of-currency">Сума: </label>
           <input type="number" id="number-of-currency" />
 
-          <label for="from-which-currency">З якої валюти</label>
-          <select id="from-which-currency">
-            <option>USD</option>
-            <option>UAH</option>
-            <option>EUR</option>
-            <option>GBP</option>
-            <option>JPY</option>
-          </select>
+          <div class="converter-row">
+            <label for="from-which-currency">З якої валюти</label>
+            <select id="from-which-currency">
+              <option>USD</option>
+              <option>UAH</option>
+              <option>EUR</option>
+              <option>GBP</option>
+              <option>JPY</option>
+            </select>
 
-          <label for="in-what-currency">В яку валюту</label>
-          <select id="in-what-currency">
-            <option>USD</option>
-            <option>UAH</option>
-            <option>EUR</option>
-            <option>GBP</option>
-            <option>JPY</option>
-          </select>
+            <button type="button" class="swap-btn">⇄</button>
+
+            <label for="in-what-currency">В яку валюту</label>
+            <select id="in-what-currency">
+              <option>USD</option>
+              <option>UAH</option>
+              <option>EUR</option>
+              <option>GBP</option>
+              <option>JPY</option>
+            </select>
+          </div>
 
           <input type="submit" value="Конвертувати" />
           <label for="result-currancy">Результат: </label>
@@ -47,20 +51,23 @@
         <form id="measurment">
           <label for="number-of-measurement">Значення: </label>
           <input type="number" id="number-of-measurement" />
+          <div class="converter-row">
+            <label for="from-which-measurment">З якої величини</label>
+            <select id="from-which-measurment">
+              <option>cm</option>
+              <option>mm</option>
+              <option>m</option>
+            </select>
 
-          <label for="from-which-measurment">З якої величини</label>
-          <select id="from-which-measurment">
-            <option>cm</option>
-            <option>mm</option>
-            <option>m</option>
-          </select>
+            <button type="button" class="swap-btn">⇄</button>
 
-          <label for="in-what-measurments">В яку величину</label>
-          <select id="in-what-measurments">
-            <option>cm</option>
-            <option>mm</option>
-            <option>m</option>
-          </select>
+            <label for="in-what-measurments">В яку величину</label>
+            <select id="in-what-measurments">
+              <option>cm</option>
+              <option>mm</option>
+              <option>m</option>
+            </select>
+          </div>
 
           <input type="submit" value="Конвертувати" />
           <label for="result-measurment">Результат: </label>

@@ -18,6 +18,12 @@ header {
 
   font-size: medium;
   color: aliceblue;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 main {
   max-width: 800px;
@@ -34,6 +40,9 @@ select {
   font-size: 1.1rem;
 
   padding: 12px;
+
+  width: 100%;
+  box-sizing: border-box;
 }
 input:focus,
 select:focus {
@@ -56,4 +65,45 @@ footer {
   padding: 20px;
   text-align: center;
   color: #3b3b3b;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.converter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.swap-btn {
+  margin: 0 auto;
+  padding: 5px 10px;
+  font-size: 1.2rem;
+  color: #c8e8ffa1;
+  background-color: #2a3a68e6;
+  border: 1px solid #c8e8ffa1;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@media (min-width: 600px) {
+  .converter-row {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+@media (min-width: 1024px) {
+  form {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+img {
+  max-width: 100%;
+  height: auto;
 }
