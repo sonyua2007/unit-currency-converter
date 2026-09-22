@@ -11,12 +11,14 @@
       <h1>Конвертер валют і одиниць</h1>
     </header>
     <main>
-      <section id="type">
-        <h2>Вибір типу конвертації</h2>
-        <a href="#currancy">Конвертувати валюту</a>
-        <a href="#measurment">Конвертувати одиниці</a>
-      </section>
-      <section id="form">
+      <div class="converter-card">
+        <section id="type">
+          <h2>Тип конвертації</h2>
+          <div class="tabs">
+            <a href="#currancy" class="tab-link active">Конвертувати валюту</a>
+            <a href="#measurment" class="tab-link">Конвертувати одиниці</a>
+          </div>
+        </section>
         <h2>Форма конвертації</h2>
         <form id="currancy">
           <label for="number-of-currency">Сума: </label>
@@ -73,7 +75,7 @@
           <label for="result-measurment">Результат: </label>
           <output id="result-measurment"></output>
         </form>
-      </section>
+      </div>
     </main>
     <footer>
       <p>

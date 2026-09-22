@@ -1,7 +1,36 @@
+/* 
+  Для створення інтерфейсу, що викликає довіру, було обрано стриману "фінансову" палітру. 
+  Глибокий синій колір  символізує надійність та стабільність, що є важливим 
+  для банківських інструментів та конвертерів валют. Кнопка обміну зроблена помітним, 
+  але не крикливим акцентом, щоб знизити навантаження на користувача.
+*/
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+h2 {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #273c58;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  margin-top: 2px;
+  margin-bottom: 3px;
+  opacity: 0.7;
+}
+#type h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
 }
 body {
   margin: 0;
@@ -11,6 +40,10 @@ body {
 
   color: #242424;
   background-color: #c1d3e5;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 header {
   padding: 10px;
@@ -20,18 +53,25 @@ header {
   color: aliceblue;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
 }
 main {
+  width: 100%;
   max-width: 800px;
   margin: 0 auto;
+
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 section {
-  padding: 0 16px;
-  margin-bottom: 40px;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 20px;
 }
 input,
 select {
@@ -43,14 +83,19 @@ select {
 
   width: 100%;
   box-sizing: border-box;
+  height: 44px;
+
+  transition: all 0.3s ease;
 }
 input:focus,
 select:focus {
   border-color: #4e6cb8;
   outline: none;
+  box-shadow: 0 0 0 3px rgba(88, 122, 208, 0.2);
 }
 input[type="submit"] {
-  padding: 12px 24px;
+  padding: 0 24px;
+  height: 44px;
   border-radius: 6px;
   background-color: #2a3c6a;
   color: aliceblue;
@@ -70,19 +115,17 @@ form {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
 }
-
 .converter-row {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 .swap-btn {
-  margin: 0 auto;
-  padding: 5px 10px;
+  height: 44px;
+  width: 44px;
+  flex-shrink: 0;
+  padding: 0;
   font-size: 1.2rem;
   color: #c8e8ffa1;
   background-color: #2a3a68e6;
@@ -90,7 +133,6 @@ form {
   border-radius: 5px;
   cursor: pointer;
 }
-
 @media (min-width: 600px) {
   .converter-row {
     flex-direction: row;
@@ -106,4 +148,57 @@ form {
 img {
   max-width: 100%;
   height: auto;
+}
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.tab-link {
+  text-decoration: none;
+  padding: 10px 20px;
+  background-color: transparent;
+  color: #2a3a68;
+  border: 2px solid #2a3a68;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.tab-link:hover {
+  background-color: #c1d3e5;
+}
+
+.tab-link.active {
+  background-color: #2a3a68;
+  color: aliceblue;
+}
+
+.converter-card {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #e1edfc90;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(42, 58, 104, 0.15);
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+}
+#type {
+  border-bottom: 1px solid #2f5285;
+  margin-left: -20px;
+  margin-right: -20px;
+
+  padding-left: 30px;
+  padding-right: 30px;
+
+  padding-bottom: 25px;
+  margin-bottom: 25px;
+}
+#measurment {
+  display: none;
 }
