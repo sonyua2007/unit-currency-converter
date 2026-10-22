@@ -23,11 +23,19 @@
         <h2>Форма конвертації</h2>
         <form id="currancy">
           <label for="number-of-currency">Сума: </label>
-          <input type="number" id="number-of-currency" />
+          <input
+            type="number"
+            id="number-of-currency"
+            name="amount"
+            required
+            min="0.01"
+            step="0.01"
+            placeholder="0.00"
+          />
 
           <div class="converter-row">
-            <label for="from-which-currency">З якої валюти</label>
-            <select id="from-which-currency">
+            <label for="from-currency">З якої валюти</label>
+            <select id="from-currency" name="from-currency">
               <option>USD</option>
               <option>UAH</option>
               <option>EUR</option>
@@ -35,8 +43,8 @@
 
             <button type="button" class="swap-btn">⇄</button>
 
-            <label for="in-what-currency">В яку валюту</label>
-            <select id="in-what-currency">
+            <label for="to-currency">В яку валюту</label>
+            <select id="to-currency" name="to-currency">
               <option>USD</option>
               <option>UAH</option>
               <option>EUR</option>
@@ -51,8 +59,8 @@
           <label for="number-of-measurement">Значення: </label>
           <input type="number" id="number-of-measurement" />
           <div class="converter-row">
-            <label for="from-which-measurment">З якої величини</label>
-            <select id="from-which-measurment">
+            <label for="from-measurment">З якої величини</label>
+            <select id="from-measurment">
               <option>cm</option>
               <option>mm</option>
               <option>m</option>
@@ -60,8 +68,8 @@
 
             <button type="button" class="swap-btn">⇄</button>
 
-            <label for="in-what-measurments">В яку величину</label>
-            <select id="in-what-measurments">
+            <label for="to-measurments">В яку величину</label>
+            <select id="to-measurments">
               <option>cm</option>
               <option>mm</option>
               <option>m</option>
@@ -79,6 +87,8 @@
         <ul id="rates-list">
           <li class="static-example">Приклад валюти: 0.00</li>
         </ul>
+        <h2>Історія конвертацій</h2>
+        <ul id="history-list"></ul>
       </section>
     </main>
     <footer>

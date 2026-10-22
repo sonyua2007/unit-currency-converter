@@ -67,3 +67,80 @@ function renderRates(ratesData) {
 renderRates(exchangeRates);
 const ratesCount = Object.keys(exchangeRates).length;
 countElement.textContent = `Кількість валют у списку: ${ratesCount}`;
+
+// Створюємо історію конвертацій
+const historyArray = [];
+const historyListContainer = document.querySelector("#history-list");
+
+function renderHistory(historyData) {
+  historyListContainer.innerHTML = "";
+
+  for (const item of historyData) {
+    const liElement = document.createElement("li");
+    liElement.textContent = `Конвертація: ${item.amount} ${item.from} ➔ ${item.to}`;
+    historyListContainer.append(liElement);
+  }
+}
+
+// Вибираємо форму валют за ID
+const currencyForm = document.querySelector("#currancy");
+
+currencyForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  // Зчитуємо значення полів і приводимо суму до Number
+  const amountField = document.querySelector("#number-of-currency");
+  const amountValue = Number(amountField.value);
+  const fromValue = document.querySelector("#from-currency").value;
+  const toValue = document.querySelector("#to-currency").value;
+
+  // Збираємо об'єкт і додаємо в масив
+  const newHistoryRecord = {
+    amount: amountValue,
+    from: fromValue,
+    to: toValue,
+  };
+  historyArray.push(newHistoryRecord);
+
+  // Перемальовуємо список історії
+  renderHistory(historyArray);
+
+  currencyForm.reset();
+});
+
+// Додаткова валідація для поля суми
+const amountInput = document.querySelector("#number-of-currency");
+
+amountInput.addEventListener("input", function () {
+  const currentValue = Number(amountInput.value);
+  if (currentValue <= 0) {
+    amountInput.setCustomValidity("Сума має бути додатною");
+  } else {
+    amountInput.setCustomValidity("");
+  }
+});
+
+// Миттєвий перерахунок при зміні валюти
+const fromSelectElem = document.querySelector("#from-currency");
+const toSelectElem = document.querySelector("#to-currency");
+const resultOutput = document.querySelector("#result-currancy");
+
+function calculateInstantResult() {
+  const amount = Number(amountInput.value);
+  const from = fromSelectElem.value;
+  const to = toSelectElem.value;
+
+  if (amount <= 0) {
+    resultOutput.textContent = "";
+    return;
+  }
+
+  const result = (amount / exchangeRates[from]) * exchangeRates[to];
+
+  resultOutput.textContent = `${result.toFixed(2)} ${to}`;
+}
+
+// Реагуємо на зміну селектів (change) та введення суми (input)
+fromSelectElem.addEventListener("change", calculateInstantResult);
+toSelectElem.addEventListener("change", calculateInstantResult);
+amountInput.addEventListener("input", calculateInstantResult);

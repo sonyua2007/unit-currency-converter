@@ -60,13 +60,13 @@ header {
 }
 main {
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-
-  flex-grow: 1;
+  max-width: 1000px;
+  margin: 50px auto;
   display: flex;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
   justify-content: center;
+  gap: 50px;
 }
 section {
   padding: 0;
@@ -145,6 +145,20 @@ form {
     margin: 0 auto;
   }
 }
+@media (max-width: 1024px) {
+  main {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .converter-card,
+  #rates-display {
+    flex: auto;
+    width: 100%;
+    max-width: 500px;
+  }
+}
 img {
   max-width: 100%;
   height: auto;
@@ -178,13 +192,12 @@ img {
 }
 
 .converter-card {
-  max-width: 600px;
-  margin: 0 auto;
+  flex: 0 0 450px;
+  margin: 0;
   background-color: #e1edfc90;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(42, 58, 104, 0.15);
   padding: 20px;
-
   display: flex;
   flex-direction: column;
 }
@@ -201,4 +214,65 @@ img {
 }
 #measurment {
   display: none;
+}
+#rates-display {
+  flex: 0 0 350px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+
+  background-color: #e1edfc90;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(42, 58, 104, 0.15);
+  padding: 20px;
+
+  max-height: 534.02px;
+  overflow-y: auto;
+}
+
+#rates-display ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 25px 0;
+}
+
+#rates-display li {
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  border-left: 4px solid #324476;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+#rates-display h2 {
+  font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #324476;
+}
+
+#rates-count {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: -5px;
+  margin-bottom: 15px;
+}
+
+#result-currancy {
+  padding: 10px;
+  background-color: #ffffff;
+  border: 2px solid #324476;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #324476;
+  min-height: 50px;
+}
+#number-of-currency,
+#from-currency,
+#to-currency {
+  border: 1.5px solid #324476;
+  border-radius: 8px;
 }
