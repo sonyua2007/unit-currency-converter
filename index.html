@@ -51,8 +51,16 @@
             </select>
           </div>
 
-          <input type="submit" value="Конвертувати" />
+          <div class="button-group">
+            <input type="submit" value="Конвертувати" />
+            <button type="button" id="update-rates-btn">Оновити курси</button>
+          </div>
+
           <label for="result-currancy">Результат: </label>
+          <div
+            id="error-message"
+            style="color: red; display: none; margin-bottom: 15px"
+          ></div>
           <output id="result-currancy"></output>
         </form>
         <form id="measurment">

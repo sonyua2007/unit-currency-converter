@@ -144,3 +144,70 @@ function calculateInstantResult() {
 fromSelectElem.addEventListener("change", calculateInstantResult);
 toSelectElem.addEventListener("change", calculateInstantResult);
 amountInput.addEventListener("input", calculateInstantResult);
+
+const API_URL = "https://api.frankfurter.app/latest?from=USD&to=UAH";
+
+// Функція для отримання актуальних даних із зовнішнього API
+async function loadData() {
+  const submitBtn = document.querySelector("#update-rates-btn");
+  const errorDisplay = document.querySelector("#error-message");
+
+  if (submitBtn) {
+    submitBtn.value = "Завантаження...";
+    submitBtn.disabled = true;
+  }
+
+  if (errorDisplay) {
+    errorDisplay.style.display = "none";
+  }
+
+  try {
+    const response = await fetch(API_URL);
+
+    if (!response.ok) {
+      throw new Error("Перевірте код валюти");
+    }
+
+    const data = await response.json();
+    console.log("Дані успішно отримано:", data);
+
+    // Виведення даних в DOM
+    if (data.rates) {
+      listContainer.innerHTML = "";
+      renderRates(data.rates);
+    }
+  } catch (error) {
+    console.error("Сталася помилка під час запиту:", error.message);
+
+    if (errorDisplay) {
+      errorDisplay.textContent =
+        "Перевірте код валюти. Сервер не зміг обробити запит.";
+      errorDisplay.style.display = "block";
+    }
+  } finally {
+    if (submitBtn) {
+      submitBtn.value = "Оновити курси";
+      submitBtn.disabled = false;
+    }
+  }
+}
+
+// Прив'язка мережевого запиту до події натискання для ручного оновлення курсів
+const updateBtn = document.querySelector("#update-rates-btn");
+if (updateBtn) {
+  updateBtn.addEventListener("click", loadData);
+}
+
+// автоматичне приховування повідомлення про помилку, коли користувач починає нове введення
+const formToWatch = document.querySelector("#currancy");
+const errorMsg = document.querySelector("#error-message");
+
+if (formToWatch && errorMsg) {
+  formToWatch.addEventListener("input", () => {
+    errorMsg.style.display = "none";
+  });
+
+  formToWatch.addEventListener("change", () => {
+    errorMsg.style.display = "none";
+  });
+}
