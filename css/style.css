@@ -271,7 +271,7 @@ img {
   box-shadow: 0 8px 24px rgba(42, 58, 104, 0.15);
   padding: 20px;
 
-  max-height: 534.02px;
+  max-height: 549.02px;
   overflow-y: auto;
 }
 
@@ -320,4 +320,32 @@ img {
 #to-currency {
   border: 1.5px solid #324476;
   border-radius: 8px;
+}
+
+#rates-display .rate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.delete-btn {
+  padding: 0 14px;
+  height: 32px;
+  background-color: #2a3c6a;
+  color: aliceblue;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #1a2542;
+}
+
+.delete-btn:active {
+  transform: scale(0.97);
 }

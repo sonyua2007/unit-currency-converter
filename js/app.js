@@ -1,3 +1,6 @@
+// Було обрано React, оскільки за результатами порівняння він виявився ближчим до звичайного JavaScript,
+// тоді як Vue використовує специфічні HTML-шаблони
+
 // Зберігаємо курси валют відносно базової валюти
 const exchangeRates = {
   USD: 1,
@@ -44,27 +47,25 @@ function processConversion(amount, targetCurrency) {
 processConversion(300, "UAH");
 processConversion(100, "EUR");
 
-// Функція рендеру
+/*
 function renderRates(ratesData) {
   const ratesArray = Object.entries(ratesData);
-
   for (const entry of ratesArray) {
     const currency = entry[0];
     const rate = entry[1];
-
     const liElement = document.createElement("li");
     liElement.textContent = `${currency}: ${rate}`;
     liElement.setAttribute("data-rate", rate);
     if (rate > 10) {
       liElement.classList.add("big-rate");
     }
-
     listContainer.append(liElement);
   }
 }
+*/
 
 // Виклик функції та оновлення підсумкового елемента
-renderRates(exchangeRates);
+//renderRates(exchangeRates);
 const ratesCount = Object.keys(exchangeRates).length;
 countElement.textContent = `Кількість валют у списку: ${ratesCount}`;
 
@@ -81,7 +82,7 @@ function renderHistory(historyData) {
     historyListContainer.append(liElement);
   }
 }
-
+/*
 // Вибираємо форму валют за ID
 const currencyForm = document.querySelector("#currancy");
 
@@ -144,6 +145,7 @@ function calculateInstantResult() {
 fromSelectElem.addEventListener("change", calculateInstantResult);
 toSelectElem.addEventListener("change", calculateInstantResult);
 amountInput.addEventListener("input", calculateInstantResult);
+*/
 
 const API_URL = "https://api.frankfurter.app/latest?from=USD&to=UAH";
 
@@ -172,10 +174,10 @@ async function loadData() {
     console.log("Дані успішно отримано:", data);
 
     // Виведення даних в DOM
-    if (data.rates) {
+    /*if (data.rates) {
       listContainer.innerHTML = "";
       renderRates(data.rates);
-    }
+    }*/
   } catch (error) {
     console.error("Сталася помилка під час запиту:", error.message);
 
@@ -210,4 +212,152 @@ if (formToWatch && errorMsg) {
   formToWatch.addEventListener("change", () => {
     errorMsg.style.display = "none";
   });
+}
+
+function RateItem(props) {
+  return (
+    <li className="rate-item">
+      <span>Курс {props.code}: </span>
+      <strong>{props.rate}</strong>
+
+      <button className="delete-btn" onClick={() => props.onDelete(props.id)}>
+        Видалити
+      </button>
+    </li>
+  );
+}
+
+// Компонент Конвертера з похідним станом
+function ConverterForm(props) {
+  const [amount, setAmount] = React.useState("100");
+  const [fromUnit, setFromUnit] = React.useState("USD");
+  const [toUnit, setToUnit] = React.useState("EUR");
+
+  const codes = props.ratesList.map((r) => r.code);
+  if (codes.length === 0) {
+    return <p>Немає доступних валют</p>;
+  }
+
+  const from = codes.includes(fromUnit) ? fromUnit : codes[0];
+  const to = codes.includes(toUnit) ? toUnit : codes[0];
+
+  const fromRate = props.ratesList.find((r) => r.code === from).rate;
+  const toRate = props.ratesList.find((r) => r.code === to).rate;
+
+  const numericAmount = Number(amount);
+  const isValid = numericAmount > 0;
+
+  const result = isValid
+    ? ((numericAmount / fromRate) * toRate).toFixed(2)
+    : "";
+
+  const options = props.ratesList.map((r) => (
+    <option key={r.id} value={r.code}>
+      {r.code}
+    </option>
+  ));
+
+  function handleSwap() {
+    setFromUnit(to);
+    setToUnit(from);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!isValid) return;
+    props.onSave({ amount: numericAmount, from, to });
+    setAmount("");
+  }
+
+  return (
+    <form id="currancy" onSubmit={handleSubmit}>
+      <label htmlFor="number-of-currency">Сума: </label>
+      <input
+        type="number"
+        id="number-of-currency"
+        name="amount"
+        min="0.01"
+        step="0.01"
+        placeholder="0.00"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+      />
+
+      <div className="converter-row">
+        <label htmlFor="from-currency">З якої валюти</label>
+        <select
+          id="from-currency"
+          value={from}
+          onChange={(e) => setFromUnit(e.target.value)}
+        >
+          {options}
+        </select>
+
+        <button type="button" className="swap-btn" onClick={handleSwap}>
+          ⇄
+        </button>
+
+        <label htmlFor="to-currency">В яку валюту</label>
+        <select
+          id="to-currency"
+          value={to}
+          onChange={(e) => setToUnit(e.target.value)}
+        >
+          {options}
+        </select>
+      </div>
+
+      <div className="button-group">
+        <input type="submit" value="Зберегти в історію" disabled={!isValid} />
+      </div>
+
+      <label htmlFor="result-currancy">Результат: </label>
+      <output id="result-currancy">{result && `${result} ${to}`}</output>
+    </form>
+  );
+}
+
+function CurrencyApp() {
+  const [ratesList, setRatesList] = React.useState([
+    { id: 1, code: "USD", rate: 1.0 },
+    { id: 2, code: "EUR", rate: 0.92 },
+    { id: 3, code: "UAH", rate: 41.5 },
+  ]);
+
+  const handleDelete = (idToRemove) => {
+    setRatesList(ratesList.filter((currency) => currency.id !== idToRemove));
+  };
+
+  const handleSave = (record) => {
+    historyArray.push(record);
+    renderHistory(historyArray);
+  };
+
+  const listNode = document.getElementById("rates-list");
+
+  return (
+    <>
+      <ConverterForm ratesList={ratesList} onSave={handleSave} />
+
+      {listNode &&
+        ReactDOM.createPortal(
+          ratesList.map((currency) => (
+            <RateItem
+              key={currency.id}
+              id={currency.id}
+              code={currency.code}
+              rate={currency.rate}
+              onDelete={handleDelete}
+            />
+          )),
+          listNode,
+        )}
+    </>
+  );
+}
+
+const rootNode = document.getElementById("react-root");
+if (rootNode) {
+  const root = ReactDOM.createRoot(rootNode);
+  root.render(<CurrencyApp />);
 }
