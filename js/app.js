@@ -66,22 +66,163 @@ function renderRates(ratesData) {
 
 // Виклик функції та оновлення підсумкового елемента
 //renderRates(exchangeRates);
+
 const ratesCount = Object.keys(exchangeRates).length;
 countElement.textContent = `Кількість валют у списку: ${ratesCount}`;
 
 // Створюємо історію конвертацій
-const historyArray = [];
-const historyListContainer = document.querySelector("#history-list");
+const STORAGE_KEY = "conversion_history";
 
-function renderHistory(historyData) {
+// Зберігає масив записів історії у localStorage
+function saveToLocalStorage(items) {
+  try {
+    const jsonString = JSON.stringify(items);
+    localStorage.setItem(STORAGE_KEY, jsonString);
+  } catch (error) {
+    console.error("Помилка збереження у localStorage:", error);
+  }
+}
+
+// Завантажує масив записів із localStorage (повертає [] у разі помилки або відсутності даних)
+function loadFromLocalStorage() {
+  try {
+    const rawData = localStorage.getItem(STORAGE_KEY);
+    if (!rawData) {
+      return [];
+    }
+    const parsedData = JSON.parse(rawData);
+    return Array.isArray(parsedData) ? parsedData : [];
+  } catch (error) {
+    console.error("Помилка читання з localStorage:", error);
+    return [];
+  }
+}
+
+const DB_NAME = "CurrencyConverterDB";
+const DB_VERSION = 1;
+const STORE_NAME = "history";
+
+// Підключення до IndexedDB та створення object store при першому запуску
+function openDB() {
+  return new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject(new Error("Браузер не підтримує IndexedDB"));
+      return;
+    }
+
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, {
+          keyPath: "id",
+          autoIncrement: true,
+        });
+      }
+    };
+
+    request.onsuccess = (event) => {
+      resolve(event.target.result);
+    };
+
+    request.onerror = (event) => {
+      reject(
+        event.target.error ||
+          new Error("Помилка відкриття бази даних IndexedDB"),
+      );
+    };
+  });
+}
+
+async function runStoreRequest(mode, operation) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const store = db.transaction(STORE_NAME, mode).objectStore(STORE_NAME);
+    const request = operation(store);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// CRUD-функції
+const addItem = (item) =>
+  runStoreRequest("readwrite", (store) => store.add(item));
+const updateItem = (item) =>
+  runStoreRequest("readwrite", (store) => store.put(item));
+const getAllItems = () =>
+  runStoreRequest("readonly", (store) => store.getAll());
+const deleteItem = (id) =>
+  runStoreRequest("readwrite", (store) => store.delete(id));
+
+const MIGRATION_FLAG = "history_migrated_to_idb";
+
+// Одноразова міграція даних із localStorage в IndexedDB
+async function migrateFromLocalStorage() {
+  if (localStorage.getItem(MIGRATION_FLAG) === "true") {
+    return;
+  }
+
+  const existingItems = await getAllItems();
+  const localItems = loadFromLocalStorage();
+
+  if (existingItems.length === 0 && localItems.length > 0) {
+    for (const item of localItems) {
+      // Призначаємо новий id через autoIncrement
+      const { id, ...recordWithoutId } = item;
+      await addItem(recordWithoutId);
+    }
+  }
+
+  localStorage.setItem(MIGRATION_FLAG, "true");
+}
+
+const historyArray = loadFromLocalStorage();
+const historyListContainer = document.querySelector("#history-list");
+/*function renderHistory(historyData) {
+  if (!historyListContainer) return;
   historyListContainer.innerHTML = "";
 
   for (const item of historyData) {
     const liElement = document.createElement("li");
-    liElement.textContent = `Конвертація: ${item.amount} ${item.from} ➔ ${item.to}`;
+    liElement.textContent = `Конвертація: ${item.amount} ${item.from} ➔ ${item.result} ${item.to}`;
+    historyListContainer.append(liElement);
+  }
+}*/
+
+//renderHistory(historyArray);
+async function renderHistoryFromDB() {
+  if (!historyListContainer) return;
+
+  const allItems = await getAllItems();
+
+  const latestTen = allItems
+    .sort((a, b) => b.timestamp - a.timestamp)
+    .slice(0, 10);
+
+  historyListContainer.innerHTML = "";
+
+  for (const item of latestTen) {
+    const liElement = document.createElement("li");
+    liElement.textContent = `Конвертація: ${item.amount} ${item.from} ➔ ${item.result} ${item.to}`;
     historyListContainer.append(liElement);
   }
 }
+
+async function initStorage() {
+  try {
+    await migrateFromLocalStorage();
+    await renderHistoryFromDB();
+  } catch (error) {
+    console.error("Помилка роботи з IndexedDB:", error);
+    if (historyListContainer) {
+      historyListContainer.innerHTML = `<li>Не вдалося завантажити історію: база даних IndexedDB недоступна.</li>`;
+    }
+  }
+}
+
+initStorage();
+
 /*
 // Вибираємо форму валют за ID
 const currencyForm = document.querySelector("#currancy");
@@ -265,7 +406,13 @@ function ConverterForm(props) {
   function handleSubmit(e) {
     e.preventDefault();
     if (!isValid) return;
-    props.onSave({ amount: numericAmount, from, to });
+    props.onSave({
+      amount: numericAmount,
+      from,
+      to,
+      result,
+      timestamp: Date.now(),
+    });
     setAmount("");
   }
 
@@ -328,9 +475,13 @@ function CurrencyApp() {
     setRatesList(ratesList.filter((currency) => currency.id !== idToRemove));
   };
 
-  const handleSave = (record) => {
-    historyArray.push(record);
-    renderHistory(historyArray);
+  const handleSave = async (record) => {
+    try {
+      await addItem(record);
+      await renderHistoryFromDB();
+    } catch (error) {
+      console.error("Помилка збереження запису в IndexedDB:", error);
+    }
   };
 
   const listNode = document.getElementById("rates-list");
