@@ -15,14 +15,13 @@ h1 {
 }
 h2 {
   text-align: center;
-  font-size: 0.9rem;
-  color: #273c58;
+  font-size: 1.05rem;
+  color: #2a3a68;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  font-weight: 600;
-  margin-top: 2px;
-  margin-bottom: 3px;
-  opacity: 0.7;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 16px;
 }
 #type h2 {
   margin-top: 0;
@@ -46,7 +45,7 @@ body {
   min-height: 100vh;
 }
 header {
-  padding: 10px;
+  padding: 8px;
   background-color: #2a3a68;
 
   font-size: medium;
@@ -59,12 +58,13 @@ header {
   gap: 12px;
 }
 main {
+  flex: 1;
   width: 100%;
   max-width: 1000px;
   margin: 50px auto;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
   gap: 50px;
 }
@@ -143,7 +143,7 @@ input[type="submit"]:hover {
 
 footer {
   font-size: 0.9rem;
-  padding: 20px;
+  padding: 12px 20px;
   text-align: center;
   color: #3b3b3b;
 }
@@ -237,7 +237,7 @@ img {
 }
 
 .converter-card {
-  flex: 0 0 450px;
+  flex: 0 0 460px;
   margin: 0;
   background-color: #e1edfc90;
   border-radius: 12px;
@@ -271,7 +271,7 @@ img {
   box-shadow: 0 8px 24px rgba(42, 58, 104, 0.15);
   padding: 20px;
 
-  max-height: 549.02px;
+  max-height: 630px;
   overflow-y: auto;
 }
 
@@ -289,13 +289,6 @@ img {
   font-size: 0.95rem;
   border-left: 4px solid #324476;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-#rates-display h2 {
-  font-size: 1.2rem;
-  margin-top: 0;
-  margin-bottom: 10px;
-  color: #324476;
 }
 
 #rates-count {
@@ -348,4 +341,43 @@ img {
 
 .delete-btn:active {
   transform: scale(0.97);
+}
+
+.chart-wrapper {
+  margin-top: 16px;
+}
+
+#history-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.chart-btn {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: aliceblue;
+  background-color: #2a3c6a;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.15s ease;
+}
+
+.chart-btn:hover {
+  background-color: #1a2542;
+}
+
+.chart-btn:active {
+  transform: scale(0.98);
 }

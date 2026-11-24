@@ -13,13 +13,6 @@
     </header>
     <main>
       <div class="converter-card">
-        <section id="type">
-          <h2>Тип конвертації</h2>
-          <div class="tabs">
-            <a href="#currancy" class="tab-link active">Конвертувати валюту</a>
-            <a href="#measurment" class="tab-link">Конвертувати одиниці</a>
-          </div>
-        </section>
         <h2>Форма конвертації</h2>
         <!-- <form id="currancy">
           <label for="number-of-currency">Сума: </label>
@@ -91,6 +84,12 @@
           <label for="result-measurment">Результат: </label>
           <output id="result-measurment"></output>
         </form>
+        <div class="chart-wrapper">
+          <canvas id="history-chart" width="420" height="150"></canvas>
+          <button type="button" id="chart-toggle-btn" class="chart-btn">
+            Повторити анімацію
+          </button>
+        </div>
       </div>
       <section id="rates-display">
         <h2>Доступні курси</h2>

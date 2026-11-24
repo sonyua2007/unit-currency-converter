@@ -177,8 +177,196 @@ async function migrateFromLocalStorage() {
   localStorage.setItem(MIGRATION_FLAG, "true");
 }
 
-const historyArray = loadFromLocalStorage();
 const historyListContainer = document.querySelector("#history-list");
+
+// Отримання елемента Canvas та його 2D-контексту
+const historyCanvas = document.querySelector("#history-chart");
+const ctx = historyCanvas ? historyCanvas.getContext("2d") : null;
+const chartToggleBtn = document.querySelector("#chart-toggle-btn");
+
+let animationFrameId = null;
+let isChartPaused = false;
+let chartProgress = 0;
+let lastChartRecords = [];
+let lastChartCurrency = "EUR";
+let currentChartCurrency = "EUR";
+let resumeChartFn = null;
+
+// Малювання міні-графіка останніх результатів для обраної цільової валюти
+function drawHistoryChart(records, targetCurrency = currentChartCurrency) {
+  if (!ctx || !historyCanvas) return;
+
+  lastChartRecords = records;
+  lastChartCurrency = targetCurrency;
+
+  // Зупиняємо попередню анімацію перед запуском нової
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+
+  const width = historyCanvas.width;
+  const height = historyCanvas.height;
+  const paddingTop = 34;
+  const paddingSide = 34;
+  const paddingBottom = 20;
+
+  // Фільтруємо останні 10 записів для обраної цільової валюти
+  const filteredByCurrency = records
+    .filter((item) => item.to === targetCurrency)
+    .slice(0, 10)
+    .reverse();
+
+  const values = filteredByCurrency
+    .map((item) => Number(item.result))
+    .filter((num) => !Number.isNaN(num));
+
+  // Якщо записів менше 2 - показуємо підказку
+  if (values.length < 2) {
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "#64748b";
+    ctx.font = "13px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(
+      `Додайте мінімум 2 конвертації у ${targetCurrency} для графіка`,
+      width / 2,
+      height / 2,
+    );
+    if (chartToggleBtn) chartToggleBtn.style.display = "none";
+    return;
+  }
+
+  if (chartToggleBtn) {
+    chartToggleBtn.style.display = "inline-block";
+    chartToggleBtn.textContent = "Пауза";
+  }
+
+  const minVal = Math.min(...values);
+  const maxVal = Math.max(...values);
+  const range = maxVal - minVal || 1;
+
+  // Обчислюємо координати (x, y) для кожної точки на Canvas
+  const plotWidth = width - paddingSide * 2;
+  const plotHeight = height - paddingTop - paddingBottom;
+  const points = values.map((val, index) => {
+    const x = paddingSide + (index / (values.length - 1)) * plotWidth;
+    const normalizedY = (val - minVal) / range;
+    const y = height - paddingBottom - normalizedY * plotHeight;
+    return { x, y, val };
+  });
+
+  chartProgress = 0;
+  isChartPaused = false;
+
+  function renderFrame() {
+    if (isChartPaused) return;
+
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.fillStyle = "#2b3a67";
+    ctx.font = "bold 12px sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`Динаміка результатів у ${targetCurrency}`, paddingSide, 16);
+
+    ctx.strokeStyle = "#e2e8f0";
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 2; i++) {
+      const gridY = paddingTop + (plotHeight / 2) * i;
+      ctx.beginPath();
+      ctx.moveTo(paddingSide, gridY);
+      ctx.lineTo(width - paddingSide, gridY);
+      ctx.stroke();
+    }
+
+    // Обмежуємо область малювання по ширині відповідно до прогресу анімації
+    const currentClipX = paddingSide + plotWidth * chartProgress;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, currentClipX + 16, height);
+    ctx.clip();
+
+    // Лінія графіка
+    ctx.strokeStyle = "#2b3a67";
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    points.forEach((pt, idx) => {
+      if (idx === 0) ctx.moveTo(pt.x, pt.y);
+      else ctx.lineTo(pt.x, pt.y);
+    });
+    ctx.stroke();
+
+    // Точки та числові значення біля них
+    points.forEach((pt) => {
+      ctx.fillStyle = "#2b3a67";
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#334155";
+      ctx.font = "11px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(pt.val.toFixed(2), pt.x, pt.y - 8);
+    });
+
+    ctx.restore();
+
+    if (chartProgress < 1) {
+      chartProgress = Math.min(1, chartProgress + 0.005);
+      animationFrameId = requestAnimationFrame(renderFrame);
+    } else {
+      animationFrameId = null;
+      if (chartToggleBtn) chartToggleBtn.textContent = "Повторити анімацію";
+    }
+  }
+
+  resumeChartFn = renderFrame;
+  animationFrameId = requestAnimationFrame(renderFrame);
+}
+
+// Керування анімацією
+if (chartToggleBtn) {
+  chartToggleBtn.addEventListener("click", () => {
+    if (chartProgress >= 1) {
+      drawHistoryChart(lastChartRecords, lastChartCurrency);
+    } else if (isChartPaused) {
+      isChartPaused = false;
+      chartToggleBtn.textContent = "Пауза";
+      if (resumeChartFn)
+        animationFrameId = requestAnimationFrame(resumeChartFn);
+    } else {
+      isChartPaused = true;
+      chartToggleBtn.textContent = "Продовжити";
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    }
+  });
+}
+
+// Зупинка анімації при згортанні вкладки або виході зі сторінки
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  } else if (
+    !document.hidden &&
+    !isChartPaused &&
+    chartProgress < 1 &&
+    resumeChartFn
+  ) {
+    animationFrameId = requestAnimationFrame(resumeChartFn);
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+});
+
 /*function renderHistory(historyData) {
   if (!historyListContainer) return;
   historyListContainer.innerHTML = "";
@@ -207,6 +395,8 @@ async function renderHistoryFromDB() {
     liElement.textContent = `Конвертація: ${item.amount} ${item.from} ➔ ${item.result} ${item.to}`;
     historyListContainer.append(liElement);
   }
+
+  drawHistoryChart(latestTen);
 }
 
 async function initStorage() {
@@ -381,6 +571,11 @@ function ConverterForm(props) {
 
   const from = codes.includes(fromUnit) ? fromUnit : codes[0];
   const to = codes.includes(toUnit) ? toUnit : codes[0];
+
+  React.useEffect(() => {
+    currentChartCurrency = to;
+    renderHistoryFromDB();
+  }, [to]);
 
   const fromRate = props.ratesList.find((r) => r.code === from).rate;
   const toRate = props.ratesList.find((r) => r.code === to).rate;
